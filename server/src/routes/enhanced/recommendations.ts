@@ -14,16 +14,28 @@ router.get("/", authenticateToken, async (req: AuthRequest, res) => {
 
     console.log("📊 Getting AI recommendations for user:", userId);
 
-    // Check user exists
+    // Check user subscription and eligibility
     const user = await prisma.user.findUnique({
       where: { user_id: userId },
-      select: { subscription_type: true },
+      select: { subscription_type: true, signup_date: true },
     });
 
     if (!user) {
       return res.status(404).json({
         success: false,
         error: "User not found",
+      });
+    }
+
+    // Check if user's subscription tier allows AI recommendations
+    const eligibleTiers = ["GOLD", "PLATINUM"];
+    if (!eligibleTiers.includes(user.subscription_type)) {
+      return res.status(403).json({
+        success: false,
+        error: "AI recommendations are only available for Gold and Platinum subscribers.",
+        subscriptionRequired: true,
+        currentTier: user.subscription_type,
+        requiredTiers: eligibleTiers,
       });
     }
 
