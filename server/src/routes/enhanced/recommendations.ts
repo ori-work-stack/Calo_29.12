@@ -14,18 +14,16 @@ router.get("/", authenticateToken, async (req: AuthRequest, res) => {
 
     console.log("📊 Getting AI recommendations for user:", userId);
 
-    // Check user subscription
+    // Check user exists
     const user = await prisma.user.findUnique({
       where: { user_id: userId },
       select: { subscription_type: true },
     });
 
-    if (!user || user.subscription_type === "FREE") {
-      return res.status(403).json({
+    if (!user) {
+      return res.status(404).json({
         success: false,
-        error:
-          "AI recommendations are not available on the Free plan. Please upgrade to Gold or Platinum.",
-        subscriptionRequired: true,
+        error: "User not found",
       });
     }
 

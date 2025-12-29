@@ -6,10 +6,13 @@
     "reset-project": "node ./scripts/reset-project.js",
     "update-ip": "node ../scripts/update-ip-env.js",
     "start": "npm run update-ip && expo start",
+    "start:fresh": "npm run clear-cache && npm run start",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "clear-cache": "node -e \"console.log('Clearing cache...'); const fs = require('fs'); const path = require('path'); const dirs = ['.expo', 'node_modules/.cache']; dirs.forEach(dir => { try { fs.rmSync(dir, { recursive: true, force: true }); console.log('Removed:', dir); } catch(e) {} }); console.log('Cache cleared! Run: npm start -- --clear');\"",
+    "clear-cache:full": "bash clear-cache.sh || clear-cache.bat"
   },
   "dependencies": {
     "@expo/cli": "^54.0.2",
